@@ -1,7 +1,7 @@
 {
   "name": "countdown-timer",
   "version": "1.0.0",
-  "description": "A simple coundown timer for developed based on Electron for use mostly with churches",
+  "description": "A simple countdown timer for developed based on Electron for use mostly with churches",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
