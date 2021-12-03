@@ -1,11 +1,16 @@
 {
-  "name": "countdown-timer",
+  "name": "CountdownTimer",
   "version": "1.0.0",
   "description": "A simple countdown timer for developed based on Electron for use mostly with churches",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "watch": "nodemon --exec electron ."
+    "mac": "electron-builder -m",
+    "win": "electron-builder -w",
+    "lnx": "electron-builder -l",
+    "build": "electron-builder -mwl",
+    "make-cert": "electron-builder create-self-signed-cert -p stackacademy",
+    "publish": "electron-builder build -mwl -p onTagOrDraft"
   },
   "repository": "https://github.com/henryejemuta/countdown-timer",
   "keywords": [
@@ -18,8 +23,38 @@
   ],
   "author": "Henry Ejemuta",
   "license": "CC0-1.0",
+  "build": {
+    "appId": "io.github.henryejemuta.countdown-timer",
+    "directories": {
+      "buildResources": "."
+    },
+    "mac": {
+      "publish": [
+        "github"
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "publish": [
+        "github"
+      ],
+      "verifyUpdateCodeSignature": false,
+      "publisherName": "henryejemuta"
+    },
+    "linux": {
+      "publish": [
+        "github"
+      ],
+      "category": "Network"
+    }
+  },
+  "dependencies": {
+    "electron-log": "^2.2.11",
+    "electron-updater": "^4.0.0"
+  },
   "devDependencies": {
     "electron": "^9.0.0",
+    "electron-builder": "^22.14.5",
     "nodemon": "^2.0.0"
   }
 }

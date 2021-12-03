@@ -2,4 +2,6 @@
 .env
 /.idea
 /.vscode
+private/
+dist/
 node_modules
