@@ -1,0 +1,25 @@
+{
+  "name": "countdown-timer",
+  "version": "1.0.0",
+  "description": "A simple coundown timer for developed based on Electron for use mostly with churches",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "watch": "nodemon --exec electron ."
+  },
+  "repository": "https://github.com/henryejemuta/countdown-timer",
+  "keywords": [
+    "Electron",
+    "Master Electron",
+    "Church",
+    "Presentation",
+    "Countdown",
+    "Timer"
+  ],
+  "author": "Henry Ejemuta",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^9.0.0",
+    "nodemon": "^2.0.0"
+  }
+}
