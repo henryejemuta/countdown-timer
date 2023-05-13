@@ -1,5 +1,5 @@
 {
-  "name": "CountdownTimer",
+  "name": "countdowntimer",
   "version": "1.0.0",
   "description": "A simple countdown timer for developed based on Electron for use mostly with churches",
   "main": "main.js",
