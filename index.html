@@ -46,6 +46,28 @@
 <body style="user-select: none;-webkit-app-region:drag;">
     <h1 id="Timer">10:00</h1>
     <script>
+        function generateRedHexColorCode(value) {
+            // Ensure the value is within the range of 1 to 30
+            value = Math.max(1, Math.min(30, value));
+
+            // Calculate the red component based on the value
+            var red = Math.round((255 * (30 - value)) / 29);
+
+            // Calculate the green and blue components
+            var green = Math.round(255 / 30);
+            var blue = Math.round(255 / 30);
+
+            // Convert the red, green, and blue components to hexadecimal strings
+            var redHex = red.toString(16).padStart(2, '0');
+            var greenHex = green.toString(16).padStart(2, '0');
+            var blueHex = blue.toString(16).padStart(2, '0');
+
+            // Construct the hex color code
+            var hexColorCode = '#' + redHex + greenHex + blueHex;
+
+            return hexColorCode;
+        }
+
         function handleKeyPress(event) {
             // You can put code here to handle the keypress.
             // document.getElementById("last-keypress").innerText = event.key
@@ -79,8 +101,6 @@
         }
         window.addEventListener('resize', setFontSize, true);
         window.addEventListener('load', setFontSize, true);
-
-
 
         const setMinutesAndSeconds = () => {
             const timeArr = (timer.innerText).split(":");
@@ -142,7 +162,19 @@
                 minutes = 59;
                 hours--;
             }
-            // console.log(seconds, minutes);
+            // If time is less than 30 sec, start blinking
+            if ((seconds <= 30) && (minutes == 0) && (hours == 0)) {
+                setTimeout(() => {
+                    // alert(document.body.style.backgroundColor);
+                    if (['#000', 'rgb(0,0,0)', 'rgb(0, 0, 0)'].includes(document.body.style.backgroundColor) || (`${document.body.style.backgroundColor}`.length < 1)) {
+                        document.body.style.backgroundColor = generateRedHexColorCode(seconds);
+                    } else if (seconds != 0) {
+                        document.body.style.backgroundColor = '#000';
+                    }
+                }, 1000);
+            }
+
+            // If Time is Up update screen accordingly
             if ((seconds == 0) && (minutes == 0) && (hours == 0)) {
                 pauseTimer();
                 document.body.style.backgroundColor = 'RED';
