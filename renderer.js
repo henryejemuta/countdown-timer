@@ -95,7 +95,7 @@ function handleKeyPress (event) {
       } else if ((e.code === "ArrowUp") && (isCleared || isPaused)) {
           setMinutesAndSeconds();
           seconds = 00;
-          if (minutes < 99)
+          if (minutes < 999)
               minutes++;
           updateTimer();
       }

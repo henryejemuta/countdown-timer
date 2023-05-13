@@ -7,6 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        @font-face {
+            font-family: 'Morganite';
+            src: url('./fonts/Morganite-Black.eot');
+            /* IE9 Compat Modes */
+            src: url('./fonts/Morganite-Black.eot?#iefix') format('embedded-opentype'),
+                /* IE6-IE8 */
+                url('./fonts/Morganite-Black.woff2') format('woff2'),
+                /* Super Modern Browsers */
+                url('./fonts/Morganite-Black.woff') format('woff'),
+                /* Pretty Modern Browsers */
+                url('./fonts/Morganite-Black.ttf') format('truetype'),
+                /* Safari, Android, iOS */
+                url('./fonts/Morganite-Black.svg#svgFontName') format('svg');
+            /* Legacy iOS */
+        }
+
         body {
             width: 100vw;
             height: 100vh;
@@ -18,122 +34,174 @@
             font-size: 15rem;
             overflow: hidden;
         }
+
+        h1 {
+            font-family: "Morganite" !important;
+            /* Set initial font size relative to viewport width */
+            font-size: 55vw;
+        }
     </style>
 </head>
 
 <body style="user-select: none;-webkit-app-region:drag;">
-    <h1 id="Timer">00:04</h1>
+    <h1 id="Timer">00:02</h1>
     <script>
-        function handleKeyPress (event) {
-    // You can put code here to handle the keypress.
-    // document.getElementById("last-keypress").innerText = event.key
-    console.log(`You pressed ${event.key}`)
-    process.mainWindow.setFullScreen(true);
-  }
-  
-  window.addEventListener('keyup', handleKeyPress, true)
+        function handleKeyPress(event) {
+            // You can put code here to handle the keypress.
+            // document.getElementById("last-keypress").innerText = event.key
+            console.log(`You pressed ${event.key}`)
+            process.mainWindow.setFullScreen(true);
+        }
 
-  let isCleared = false;
-  let isPaused = false;
-  const strPad = (pad, str, padPos) => {
-      if (typeof str === 'undefined')
-          return pad;
-      if (padPos == 'l') {
-          return (pad + str).slice(-pad.length);
-      }
-      else {
-          return (str + pad).substring(0, pad.length);
-      }
-  }
+        window.addEventListener('keyup', handleKeyPress, true);
 
-  const timer = document.querySelector('#Timer');
-  let minutes, seconds;
+        let isCleared = false;
+        let isPaused = false;
+        const strPad = (pad, str, padPos) => {
+            if (typeof str === 'undefined')
+                return pad;
+            if (padPos == 'l') {
+                return (pad + str).slice(-pad.length);
+            }
+            else {
+                return (str + pad).substring(0, pad.length);
+            }
+        }
 
-
-
-  const setMinutesAndSeconds = () => {
-      const timeArr = (timer.innerText).split(":");
-      minutes = Number(timeArr[0]);
-      seconds = Number(timeArr[1]);
-  }
-
-  const updateTimer = () => {
-      const min = strPad('00', minutes, 'l');
-      const sec = strPad('00', seconds, 'l');
-      timer.innerHTML = `${min}:${sec}`;
-  }
+        const timer = document.querySelector('#Timer');
+        let hours, minutes, seconds;
 
 
-  const pauseTimer = () => {
-      isPaused = true;
-      clearInterval(timerHanler);
-  }
+        function setFontSize() {
+            let windowWidth = window.innerWidth;
+            let fontSize = (windowWidth * ((hours > 0) ? 0.45 : (((seconds == 0) && (minutes == 0) && (hours == 0)) ? 0.40 : 0.55))) + 'px'; // Calculate the font size based on window width
+            timer.style.fontSize = fontSize;
+        }
+        window.addEventListener('resize', setFontSize, true);
+        window.addEventListener('load', setFontSize, true);
 
-  const startTimer = () => {
-      setMinutesAndSeconds();
-      isPaused = false;
-      isCleared = false;
-      timerHanler = setInterval(countdown, 1000);
-  }
 
-  const clearTimer = () => {
-      document.body.style.fontSize = '15rem';
-      document.body.style.backgroundColor = '#000';
-      isCleared = true;
-      pauseTimer();
-      timer.innerHTML = "10:00";
-  }
 
-  const countdown = () => {
-      if (seconds > 0) {
-          seconds--;
-      } else if ((seconds == 0) && (minutes > 0)) {
-          seconds = 59;
-          minutes--;
-      }
-      // console.log(seconds, minutes);
-      if ((seconds == 0) && (minutes == 0)) {
-          pauseTimer();
-          document.body.style.fontSize = '8rem';
-          document.body.style.backgroundColor = 'RED';
-          timer.innerHTML = "TIME's UP";
-      }
-      else {
-          updateTimer();
-      }
-  }
+        const setMinutesAndSeconds = () => {
+            const timeArr = (timer.innerText).split(":");
+            if (timeArr.length > 2) {
+                hours = Number(timeArr[0]);
+                minutes = Number(timeArr[1]);
+                seconds = Number(timeArr[2]);
+            } else {
+                hours = 0;
+                minutes = Number(timeArr[0]);
+                seconds = Number(timeArr[1]);
 
-  setMinutesAndSeconds();
-  var timerHanler = setInterval(countdown, 1000);
+            }
+        }
 
-  document.addEventListener('keydown', (e) => {
-      // console.log(e.code);
-      if (e.code === "Space") {
-          if (isPaused)
-              startTimer();
-          else
-              pauseTimer();
-      }
-      else if (e.code === "Delete") {
-          clearTimer();
-      } else if ((e.code === "ArrowUp") && (isCleared || isPaused)) {
-          setMinutesAndSeconds();
-          seconds = 00;
-          if (minutes < 99)
-              minutes++;
-          updateTimer();
-      }
-      else if ((e.code === "ArrowDown") && (isCleared || isPaused)) {
-          setMinutesAndSeconds();
-          seconds = 00;
-          if (minutes > 1)
-              minutes--;
-          updateTimer();
-      }
+        const updateTimer = () => {
+            if (hours > 0) {
+                const hrs = strPad('00', hours, 'l');
+                const min = strPad('00', minutes, 'l');
+                const sec = strPad('00', seconds, 'l');
+                timer.innerHTML = `${hrs}:${min}:${sec}`;
+            } else {
+                const min = strPad('00', minutes, 'l');
+                const sec = strPad('00', seconds, 'l');
+                timer.innerHTML = `${min}:${sec}`;
+            }
+            setFontSize();
+        }
 
-  });
 
-      </script>
+        const pauseTimer = () => {
+            isPaused = true;
+            clearInterval(timerHanler);
+        }
+
+        const startTimer = () => {
+            setMinutesAndSeconds();
+            isPaused = false;
+            isCleared = false;
+            timerHanler = setInterval(countdown, 1000);
+        }
+
+        const clearTimer = () => {
+            setFontSize();
+            document.body.style.backgroundColor = '#000';
+            isCleared = true;
+            pauseTimer();
+            timer.innerHTML = "10:00";
+        }
+
+        const countdown = () => {
+            if (seconds > 0) {
+                seconds--;
+            } else if ((seconds == 0) && (minutes > 0)) {
+                seconds = 59;
+                minutes--;
+            } else if ((seconds == 0) && (minutes == 0) && (hours > 0)) {
+                seconds = 59;
+                minutes = 59;
+                hours--;
+            }
+            // console.log(seconds, minutes);
+            if ((seconds == 0) && (minutes == 0) && (hours == 0)) {
+                pauseTimer();
+                document.body.style.backgroundColor = 'RED';
+                timer.innerHTML = "TIME UP";
+            }
+            else {
+                updateTimer();
+            }
+            setFontSize();
+        }
+
+        setMinutesAndSeconds();
+        var timerHanler = setInterval(countdown, 1000);
+
+        document.addEventListener('keydown', (e) => {
+            // console.log(e.code);
+            if (e.code === "Space") {
+                if (isPaused)
+                    startTimer();
+                else
+                    pauseTimer();
+            }
+            else if (e.code === "Delete") {
+                clearTimer();
+            } else if ((e.code === "ArrowUp") && (isCleared || isPaused)) {
+                setMinutesAndSeconds();
+                seconds = 00;
+                if (hours < 99) {
+                    minutes++;
+                    if (minutes == 60) {
+                        minutes = 00;
+                        hours++;
+                    }
+                }
+
+                updateTimer();
+            }
+            else if ((e.code === "ArrowDown") && (isCleared || isPaused)) {
+                setMinutesAndSeconds();
+                seconds = 00;
+                if (minutes > 1) {
+                    minutes--;
+                    if ((minutes == 0) && (hours > 0)) {
+                        hours--;
+                        minutes = 59;
+                    }
+                } else if (hours > 0) {
+                    minutes--;
+                    if ((minutes == 0) && (hours > 0)) {
+                        hours--;
+                        minutes = 59;
+                    }
+                }
+                updateTimer();
+            }
+
+        });
+
+    </script>
 </body>
 
 </html>
