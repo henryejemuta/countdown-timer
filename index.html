@@ -23,6 +23,11 @@
             /* Legacy iOS */
         }
 
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
         body {
             width: 100vw;
             height: 100vh;
@@ -33,6 +38,8 @@
             background-color: #000;
             font-size: 15rem;
             overflow: hidden;
+            flex-direction: column;
+            gap: 20px;
         }
 
         h1 {
@@ -40,12 +47,39 @@
             /* Set initial font size relative to viewport width */
             font-size: 55vw;
         }
+
+        p {
+            /* font-family: "Morganite" !important; */
+            font-size: 3vw;
+            display: block;
+            color: #ddd;
+            text-align: center;
+        }
+
+        p:first-child {
+            margin-top: 15px;
+        }
+
+        body.is-running p,
+        body.finished p,
+        body p.end-instruction {
+            display: none !important;
+        }
+
+        body.finished p.end-instruction {
+            display: block !important;
+        }
     </style>
 </head>
 
 <body style="user-select: none;-webkit-app-region:drag;">
+    <p>Use arrow keys to set the time.</p>
     <h1 id="Timer">10:00</h1>
+    <p><strong>SPACE</strong> to start or pause the timer. <strong>DEL</strong> to reset and <strong>ESC</strong> to
+        exit.</p>
+    <p class="end-instruction"><strong>DEL</strong> to reset and <strong>ESC</strong> to exit.</p>
     <script>
+        let timerHanler = null;
         function generateRedHexColorCode(value) {
             // Ensure the value is within the range of 1 to 30
             value = Math.max(1, Math.min(30, value));
@@ -69,16 +103,22 @@
         }
 
         function handleKeyPress(event) {
+            if (event.code === "Space") {
+                spaceButtonPressed();
+            }
+            else if (event.code === "Esc") {
+                process.mainWindow.close();
+            }
             // You can put code here to handle the keypress.
             // document.getElementById("last-keypress").innerText = event.key
-            console.log(`You pressed ${event.key}`)
+            // console.log(`You pressed ${event.key}`)
             process.mainWindow.setFullScreen(true);
         }
 
         window.addEventListener('keyup', handleKeyPress, true);
 
         let isCleared = false;
-        let isPaused = false;
+        let isPaused = true;
         const strPad = (pad, str, padPos) => {
             if (typeof str === 'undefined')
                 return pad;
@@ -99,6 +139,7 @@
             let fontSize = (windowWidth * ((hours > 0) ? 0.45 : (((seconds == 0) && (minutes == 0) && (hours == 0)) ? 0.40 : 0.55))) + 'px'; // Calculate the font size based on window width
             timer.style.fontSize = fontSize;
         }
+
         window.addEventListener('resize', setFontSize, true);
         window.addEventListener('load', setFontSize, true);
 
@@ -112,7 +153,6 @@
                 hours = 0;
                 minutes = Number(timeArr[0]);
                 seconds = Number(timeArr[1]);
-
             }
         }
 
@@ -130,8 +170,8 @@
             setFontSize();
         }
 
-
         const pauseTimer = () => {
+            document.body.classList.remove('is-running');
             isPaused = true;
             clearInterval(timerHanler);
         }
@@ -140,6 +180,8 @@
             setMinutesAndSeconds();
             isPaused = false;
             isCleared = false;
+            document.body.classList.add('is-running');
+            document.body.classList.remove('finished');
             timerHanler = setInterval(countdown, 1000);
         }
 
@@ -165,7 +207,6 @@
             // If time is less than 30 sec, start blinking
             if ((seconds <= 30) && (minutes == 0) && (hours == 0)) {
                 setTimeout(() => {
-                    // alert(document.body.style.backgroundColor);
                     if (['#000', 'rgb(0,0,0)', 'rgb(0, 0, 0)'].includes(document.body.style.backgroundColor) || (`${document.body.style.backgroundColor}`.length < 1)) {
                         document.body.style.backgroundColor = generateRedHexColorCode(seconds);
                     } else if (seconds != 0) {
@@ -177,8 +218,9 @@
             // If Time is Up update screen accordingly
             if ((seconds == 0) && (minutes == 0) && (hours == 0)) {
                 pauseTimer();
+                document.body.classList.add('finished');
                 document.body.style.backgroundColor = 'RED';
-                timer.innerHTML = "TIME UP";
+                timer.innerHTML = "TIME's UP!";
             }
             else {
                 updateTimer();
@@ -187,17 +229,17 @@
         }
 
         setMinutesAndSeconds();
-        var timerHanler = setInterval(countdown, 1000);
+
+        function spaceButtonPressed() {
+            if (isPaused)
+                startTimer();
+            else
+                pauseTimer();
+        }
 
         document.addEventListener('keydown', (e) => {
-            // console.log(e.code);
-            if (e.code === "Space") {
-                if (isPaused)
-                    startTimer();
-                else
-                    pauseTimer();
-            }
-            else if (e.code === "Delete") {
+            document.body.classList.remove('finished');
+            if (e.code === "Delete") {
                 clearTimer();
             } else if ((e.code === "ArrowUp") && (isCleared || isPaused)) {
                 setMinutesAndSeconds();
